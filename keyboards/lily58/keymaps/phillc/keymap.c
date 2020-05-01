@@ -142,11 +142,23 @@ void matrix_init_user(void) {
 }
 
 void encoder_update_user(uint8_t index, bool clockwise) {
-  if (index == 0) {
-    if (clockwise) {
+  if(IS_LAYER_ON(_RAISE)) { // on Raise emulate mouse scrollwheel
+    if (clockwise){
+      tap_code(KC_MS_WH_DOWN);
+    } else {
+      tap_code(KC_MS_WH_UP);
+    }
+  } else if (IS_LAYER_ON(_LOWER)) { // on Lower change volume
+    if (clockwise){
       tap_code(KC_VOLU);
     } else {
       tap_code(KC_VOLD);
+    }
+  } else { // on others scroll tabs
+    if (clockwise){
+      SEND_STRING(SS_LCTL(SS_TAP(X_TAB)));
+    } else {
+      SEND_STRING(SS_LCTL(SS_LSFT(SS_TAP(X_TAB))));
     }
   }
 }
